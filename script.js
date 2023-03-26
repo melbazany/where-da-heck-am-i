@@ -53,7 +53,8 @@ const renderError = function (message) {
       // Get the JSON data and display on page
       const data = await res.json();
       renderCountry(data[0]);
-      return `You are in ${(dataGeo.city, dataGeo.country)}`;
+      return data;
+
   
     } catch (err) {
       console.log(`${err.message}`);
@@ -77,10 +78,28 @@ const renderError = function (message) {
       );
     });
   };
+
+  const checkForNeighbours = async function(neighbours) {
+    for (let neighbour of neighbours) {
+      try {
+        const neighbourDataRes = await fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
+        let neighbourData = await neighbourDataRes.json();
+        neighbourData = neighbourData[0];
+        renderCountry(neighbourData, 'neighbour');
+      } catch(err) {
+        console.log(`${err.message}`);
+      }
+    }
+  }
   
   
   btn.addEventListener('click', async function() {
       btn.disabled = true;
-      await whereAmI();
+      const responseData = await whereAmI();
       btn.style.opacity = 0;
+      let neighbours = responseData[0].borders;
+
+      if (!neighbours) return;
+      checkForNeighbours(neighbours);
+
   });

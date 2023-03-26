@@ -21,6 +21,8 @@
   }
   
   .container {
+    padding-inline: 2rem;
+    padding-block: 4rem;
     display: flex;
     flex-flow: column;
     align-items: center;
@@ -29,7 +31,7 @@
   .countries {
     margin-bottom: 4rem;
     display: flex;
-  
+    flex-flow: row wrap;
     font-size: 2rem;
     opacity: 0;
     transition: opacity 1s;
@@ -41,7 +43,6 @@
     font-size: 1.8rem;
     width: 30rem;
     border-radius: 0.7rem;
-    margin: 0 3rem;
     /* overflow: hidden; */
   }
   
@@ -60,7 +61,6 @@
   
   .neighbour {
     transform: scale(0.8) translateY(1rem);
-    margin-left: 0;
   }
   
   .country__img {
