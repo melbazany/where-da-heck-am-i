@@ -4,8 +4,12 @@ const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
 
 const renderError = function (message) {
-    countriesContainer.insertAdjacentText('beforeend', message);
-  };
+  let errEl = document.createElement('p');
+  errEl.textContent = message;
+  countriesContainer.insertAdjacentElement('beforeend', errEl);
+  countriesContainer.style.opacity = 1;
+};
+
   const renderCountry = function (data, className = '') {
     const html = `
         <article class="country ${className}">
@@ -33,7 +37,6 @@ const renderError = function (message) {
     // Geolocation retrieval
     try {
       const pos = await getPosition();
-      console.log(typeof pos);
       const { latitude: lat, longitude: lng } = pos.coords;
   
       // Reverse geocode location
@@ -58,7 +61,6 @@ const renderError = function (message) {
 
   
     } catch (err) {
-      console.log(`${err.message}`);
       renderError(`ERROR: ${err.message}`);
   
       // Reject the 'fulfilled' promise returned from async function MANUALLY
@@ -81,22 +83,32 @@ const renderError = function (message) {
   };
 
   const checkForNeighbours = async function(neighbours) {
+    let neighboursData = [];
     for (let neighbour of neighbours) {
       try {
         const neighbourDataRes = await fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
 
         if (!neighbourDataRes.ok) throw new Error('Error getting neighbour data');
-        console.log(neighbourDataRes);
+        // console.log(neighbourDataRes);
 
         let neighbourData = await neighbourDataRes.json();
+
 
         neighbourData = neighbourData[0];
 
         renderCountry(neighbourData, 'neighbour');
+
+        // Add the neighbour info to an array
+        neighboursData.push(neighbourData.name.common);
+
       } catch(err) {
         console.log(`${err.message}`);
+        renderError(`ERROR: ${err.message}`);
       }
     }
+
+    return neighboursData;
+    
   }
   
   
@@ -107,6 +119,7 @@ const renderError = function (message) {
       let neighbours = responseData[0].borders;
 
       if (!neighbours) return;
-      checkForNeighbours(neighbours);
+      let neighboursInfo = await checkForNeighbours(neighbours);
 
+      console.log(neighboursInfo);
   });
