@@ -33,6 +33,7 @@ const renderError = function (message) {
     // Geolocation retrieval
     try {
       const pos = await getPosition();
+      console.log(typeof pos);
       const { latitude: lat, longitude: lng } = pos.coords;
   
       // Reverse geocode location
@@ -60,7 +61,7 @@ const renderError = function (message) {
       console.log(`${err.message}`);
       renderError(`ERROR: ${err.message}`);
   
-      //Reject the 'fulfilled' promise returned from async function MANUALLY
+      // Reject the 'fulfilled' promise returned from async function MANUALLY
       throw err;
     }
   };
@@ -83,8 +84,14 @@ const renderError = function (message) {
     for (let neighbour of neighbours) {
       try {
         const neighbourDataRes = await fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
+
+        if (!neighbourDataRes.ok) throw new Error('Error getting neighbour data');
+        console.log(neighbourDataRes);
+
         let neighbourData = await neighbourDataRes.json();
+
         neighbourData = neighbourData[0];
+
         renderCountry(neighbourData, 'neighbour');
       } catch(err) {
         console.log(`${err.message}`);
